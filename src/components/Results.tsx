@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import type { ParsedResume } from "@/lib/types";
+import { MatchPanel } from "./MatchPanel";
 
 interface ResultsProps {
   data: ParsedResume;
@@ -329,6 +330,13 @@ export function Results({ data, onReset }: ResultsProps) {
           </ul>
         </motion.section>
       )}
+
+      {/* ============================================ */}
+      {/* MODULE 2 — MATCH AGAINST A JOB DESCRIPTION   */}
+      {/* ============================================ */}
+      <motion.div variants={item}>
+        <MatchPanel resume={data} />
+      </motion.div>
     </motion.div>
   );
 }
@@ -403,6 +411,5 @@ function SkillGroup({ title, items }: { title: string; items: string[] }) {
 
 function formatDate(d: string | null): string {
   if (!d) return "—";
-  // Accept YYYY-MM or YYYY or anything else; just display as-is
   return d;
 }

@@ -1,5 +1,7 @@
-// Mirrors the FastAPI service's ParsedResume schema exactly.
+// Mirrors the FastAPI service's schemas exactly.
 // If the backend schema changes, update here too.
+
+// ---------- Module 1: ParsedResume ----------
 
 export interface PersonalInfo {
   full_name: string | null;
@@ -66,4 +68,47 @@ export interface ParsedResume {
   certifications: CertificationEntry[];
   raw_text_length: number;
   extraction_warnings: string[];
+}
+
+// ---------- Module 2: Match types ----------
+
+export type RequirementType =
+  | "skill"
+  | "experience"
+  | "education"
+  | "certification"
+  | "other";
+
+export type RequirementImportance = "required" | "preferred" | "nice_to_have";
+
+export type RequirementMatchStatus = "match" | "partial" | "missing";
+
+export interface MatchedRequirement {
+  text: string;
+  type: RequirementType;
+  importance: RequirementImportance;
+  status: RequirementMatchStatus;
+  evidence: string | null;
+}
+
+export interface MatchRequest {
+  resume: ParsedResume;
+  job_description: string;
+  job_title?: string | null;
+  company?: string | null;
+}
+
+export interface MatchResult {
+  request_id: string;
+  matched_at: string;
+  overall_score: number; // 0–100
+  verdict: "strong" | "moderate" | "weak";
+  semantic_similarity: number; // 0–1
+  requirement_coverage: number; // 0–1
+  matched_requirements: MatchedRequirement[];
+  matched_skills: string[];
+  missing_skills: string[];
+  summary: string;
+  job_title: string | null;
+  company: string | null;
 }
