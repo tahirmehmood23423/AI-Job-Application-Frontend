@@ -2,24 +2,14 @@
 
 import { motion } from "framer-motion";
 import {
-  Mail,
-  Phone,
-  MapPin,
-  Linkedin,
-  Github,
-  Globe,
-  Briefcase,
-  GraduationCap,
-  Code2,
-  Award,
-  Copy,
-  Download,
-  RotateCcw,
-  Check,
+  Mail, Phone, MapPin, Linkedin, Github, Globe,
+  Briefcase, GraduationCap, Code2, Award,
+  Copy, Download, RotateCcw, Check,
 } from "lucide-react";
 import { useState } from "react";
 import type { ParsedResume } from "@/lib/types";
 import { MatchPanel } from "./MatchPanel";
+import { TailorPanel } from "./TailorPanel";
 
 interface ResultsProps {
   data: ParsedResume;
@@ -36,9 +26,7 @@ export function Results({ data, onReset }: ResultsProps) {
   };
 
   const downloadJson = () => {
-    const blob = new Blob([JSON.stringify(data, null, 2)], {
-      type: "application/json",
-    });
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -47,64 +35,36 @@ export function Results({ data, onReset }: ResultsProps) {
     URL.revokeObjectURL(url);
   };
 
-  const stagger = {
-    animate: { transition: { staggerChildren: 0.07 } },
-  };
+  const stagger = { animate: { transition: { staggerChildren: 0.07 } } };
   const item = {
     initial: { opacity: 0, y: 12 },
     animate: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] as const } },
   };
 
   const skillCount =
-    data.skills.technical.length +
-    data.skills.tools.length +
-    data.skills.soft.length +
-    data.skills.languages.length;
+    data.skills.technical.length + data.skills.tools.length +
+    data.skills.soft.length + data.skills.languages.length;
 
   return (
-    <motion.div
-      variants={stagger}
-      initial="initial"
-      animate="animate"
-      className="space-y-16"
-    >
+    <motion.div variants={stagger} initial="initial" animate="animate" className="space-y-16">
       {/* Action bar */}
-      <motion.div
-        variants={item}
-        className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-rule"
-      >
+      <motion.div variants={item} className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-rule">
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-graphite mb-1">
-            Parse Complete
-          </p>
+          <p className="text-xs uppercase tracking-[0.2em] text-graphite mb-1">Parse Complete</p>
           <p className="font-mono text-[11px] text-graphite">
-            ID {data.request_id.slice(0, 8)} ·{" "}
-            {data.raw_text_length.toLocaleString()} chars
+            ID {data.request_id.slice(0, 8)} · {data.raw_text_length.toLocaleString()} chars
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button
-            onClick={copyJson}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-rule bg-cream hover:bg-paper text-sm transition-colors"
-          >
-            {copied ? (
-              <Check className="w-3.5 h-3.5 text-accent" />
-            ) : (
-              <Copy className="w-3.5 h-3.5" />
-            )}
+          <button onClick={copyJson} className="inline-flex items-center gap-2 px-4 py-2 border border-rule bg-cream hover:bg-paper text-sm transition-colors">
+            {copied ? <Check className="w-3.5 h-3.5 text-accent" /> : <Copy className="w-3.5 h-3.5" />}
             {copied ? "Copied" : "Copy JSON"}
           </button>
-          <button
-            onClick={downloadJson}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-rule bg-cream hover:bg-paper text-sm transition-colors"
-          >
+          <button onClick={downloadJson} className="inline-flex items-center gap-2 px-4 py-2 border border-rule bg-cream hover:bg-paper text-sm transition-colors">
             <Download className="w-3.5 h-3.5" />
             Download
           </button>
-          <button
-            onClick={onReset}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-ink text-cream hover:bg-graphite text-sm transition-colors"
-          >
+          <button onClick={onReset} className="inline-flex items-center gap-2 px-4 py-2 bg-ink text-cream hover:bg-graphite text-sm transition-colors">
             <RotateCcw className="w-3.5 h-3.5" />
             Parse another
           </button>
@@ -118,26 +78,13 @@ export function Results({ data, onReset }: ResultsProps) {
             {data.personal.full_name}
           </h1>
         )}
-
         <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-graphite">
-          {data.personal.email && (
-            <ContactItem icon={Mail} text={data.personal.email} href={`mailto:${data.personal.email}`} />
-          )}
-          {data.personal.phone && (
-            <ContactItem icon={Phone} text={data.personal.phone} />
-          )}
-          {data.personal.location && (
-            <ContactItem icon={MapPin} text={data.personal.location} />
-          )}
-          {data.personal.linkedin_url && (
-            <ContactItem icon={Linkedin} text="LinkedIn" href={data.personal.linkedin_url} />
-          )}
-          {data.personal.github_url && (
-            <ContactItem icon={Github} text="GitHub" href={data.personal.github_url} />
-          )}
-          {data.personal.portfolio_url && (
-            <ContactItem icon={Globe} text="Portfolio" href={data.personal.portfolio_url} />
-          )}
+          {data.personal.email && <ContactItem icon={Mail} text={data.personal.email} href={`mailto:${data.personal.email}`} />}
+          {data.personal.phone && <ContactItem icon={Phone} text={data.personal.phone} />}
+          {data.personal.location && <ContactItem icon={MapPin} text={data.personal.location} />}
+          {data.personal.linkedin_url && <ContactItem icon={Linkedin} text="LinkedIn" href={data.personal.linkedin_url} />}
+          {data.personal.github_url && <ContactItem icon={Github} text="GitHub" href={data.personal.github_url} />}
+          {data.personal.portfolio_url && <ContactItem icon={Globe} text="Portfolio" href={data.personal.portfolio_url} />}
         </div>
       </motion.section>
 
@@ -156,18 +103,10 @@ export function Results({ data, onReset }: ResultsProps) {
         <motion.section variants={item}>
           <SectionLabel num="02" label="Skills" icon={Code2} />
           <div className="grid md:grid-cols-2 gap-x-12 gap-y-10">
-            {data.skills.technical.length > 0 && (
-              <SkillGroup title="Technical" items={data.skills.technical} />
-            )}
-            {data.skills.tools.length > 0 && (
-              <SkillGroup title="Tools" items={data.skills.tools} />
-            )}
-            {data.skills.soft.length > 0 && (
-              <SkillGroup title="Soft" items={data.skills.soft} />
-            )}
-            {data.skills.languages.length > 0 && (
-              <SkillGroup title="Languages" items={data.skills.languages} />
-            )}
+            {data.skills.technical.length > 0 && <SkillGroup title="Technical" items={data.skills.technical} />}
+            {data.skills.tools.length > 0 && <SkillGroup title="Tools" items={data.skills.tools} />}
+            {data.skills.soft.length > 0 && <SkillGroup title="Soft" items={data.skills.soft} />}
+            {data.skills.languages.length > 0 && <SkillGroup title="Languages" items={data.skills.languages} />}
           </div>
         </motion.section>
       )}
@@ -183,15 +122,11 @@ export function Results({ data, onReset }: ResultsProps) {
                   <div>{formatDate(exp.start_date)}</div>
                   <div>— {exp.is_current ? "Present" : formatDate(exp.end_date)}</div>
                   {exp.location && (
-                    <div className="mt-2 text-rule normal-case tracking-normal font-sans">
-                      {exp.location}
-                    </div>
+                    <div className="mt-2 text-rule normal-case tracking-normal font-sans">{exp.location}</div>
                   )}
                 </div>
                 <div>
-                  <h3 className="font-serif text-2xl md:text-3xl text-ink tracking-tight mb-1">
-                    {exp.title}
-                  </h3>
+                  <h3 className="font-serif text-2xl md:text-3xl text-ink tracking-tight mb-1">{exp.title}</h3>
                   <p className="text-sm text-accent mb-4 italic">{exp.company}</p>
                   {exp.responsibilities.length > 0 && (
                     <ul className="space-y-2 text-ink text-[15px] leading-relaxed max-w-2xl">
@@ -206,12 +141,7 @@ export function Results({ data, onReset }: ResultsProps) {
                   {exp.technologies.length > 0 && (
                     <div className="mt-4 flex flex-wrap gap-1.5">
                       {exp.technologies.map((t) => (
-                        <span
-                          key={t}
-                          className="text-[11px] font-mono text-graphite border border-rule px-2 py-0.5"
-                        >
-                          {t}
-                        </span>
+                        <span key={t} className="text-[11px] font-mono text-graphite border border-rule px-2 py-0.5">{t}</span>
                       ))}
                     </div>
                   )}
@@ -236,14 +166,10 @@ export function Results({ data, onReset }: ResultsProps) {
                 <div>
                   <h3 className="font-serif text-2xl text-ink tracking-tight mb-1">
                     {edu.degree || "Degree"}
-                    {edu.field_of_study && (
-                      <span className="text-graphite">, {edu.field_of_study}</span>
-                    )}
+                    {edu.field_of_study && <span className="text-graphite">, {edu.field_of_study}</span>}
                   </h3>
                   <p className="text-sm text-accent italic">{edu.institution}</p>
-                  {edu.gpa && (
-                    <p className="text-xs text-graphite mt-2 font-mono">GPA · {edu.gpa}</p>
-                  )}
+                  {edu.gpa && <p className="text-xs text-graphite mt-2 font-mono">GPA · {edu.gpa}</p>}
                 </div>
               </article>
             ))}
@@ -260,12 +186,7 @@ export function Results({ data, onReset }: ResultsProps) {
               <article key={i} className="border-t border-rule pt-5">
                 <h3 className="font-serif text-xl text-ink tracking-tight mb-2">
                   {proj.url ? (
-                    <a
-                      href={proj.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-accent transition-colors"
-                    >
+                    <a href={proj.url} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">
                       {proj.name}
                     </a>
                   ) : (
@@ -273,19 +194,12 @@ export function Results({ data, onReset }: ResultsProps) {
                   )}
                 </h3>
                 {proj.description && (
-                  <p className="text-sm text-graphite leading-relaxed mb-3">
-                    {proj.description}
-                  </p>
+                  <p className="text-sm text-graphite leading-relaxed mb-3">{proj.description}</p>
                 )}
                 {proj.technologies.length > 0 && (
                   <div className="flex flex-wrap gap-1.5">
                     {proj.technologies.map((t) => (
-                      <span
-                        key={t}
-                        className="text-[11px] font-mono text-graphite border border-rule px-2 py-0.5"
-                      >
-                        {t}
-                      </span>
+                      <span key={t} className="text-[11px] font-mono text-graphite border border-rule px-2 py-0.5">{t}</span>
                     ))}
                   </div>
                 )}
@@ -304,9 +218,7 @@ export function Results({ data, onReset }: ResultsProps) {
               <li key={i} className="flex justify-between items-baseline gap-4 border-b border-rule pb-3">
                 <div>
                   <span className="font-serif text-lg text-ink">{cert.name}</span>
-                  {cert.issuer && (
-                    <span className="text-sm text-graphite italic"> · {cert.issuer}</span>
-                  )}
+                  {cert.issuer && <span className="text-sm text-graphite italic"> · {cert.issuer}</span>}
                 </div>
                 {cert.date_obtained && (
                   <span className="font-mono text-xs text-graphite">{cert.date_obtained}</span>
@@ -320,38 +232,29 @@ export function Results({ data, onReset }: ResultsProps) {
       {/* Warnings */}
       {data.extraction_warnings.length > 0 && (
         <motion.section variants={item} className="border-t border-rule pt-6">
-          <p className="text-xs uppercase tracking-[0.2em] text-accentDark mb-3">
-            Notes from the parser
-          </p>
+          <p className="text-xs uppercase tracking-[0.2em] text-accentDark mb-3">Notes from the parser</p>
           <ul className="space-y-1 text-sm text-graphite italic">
-            {data.extraction_warnings.map((w, i) => (
-              <li key={i}>— {w}</li>
-            ))}
+            {data.extraction_warnings.map((w, i) => <li key={i}>— {w}</li>)}
           </ul>
         </motion.section>
       )}
 
-      {/* ============================================ */}
-      {/* MODULE 2 — MATCH AGAINST A JOB DESCRIPTION   */}
-      {/* ============================================ */}
+      {/* MODULE 2 — Match panel */}
       <motion.div variants={item}>
         <MatchPanel resume={data} />
+      </motion.div>
+
+      {/* MODULE 3 — Tailor panel */}
+      <motion.div variants={item}>
+        <TailorPanel resume={data} />
       </motion.div>
     </motion.div>
   );
 }
 
-// ---------- Small helper components ----------
+// ---------- helpers ----------
 
-function ContactItem({
-  icon: Icon,
-  text,
-  href,
-}: {
-  icon: React.ElementType;
-  text: string;
-  href?: string;
-}) {
+function ContactItem({ icon: Icon, text, href }: { icon: React.ElementType; text: string; href?: string }) {
   const inner = (
     <span className="inline-flex items-center gap-1.5">
       <Icon className="w-3.5 h-3.5" strokeWidth={1.5} />
@@ -359,35 +262,16 @@ function ContactItem({
     </span>
   );
   if (href) {
-    return (
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="hover:text-accent transition-colors"
-      >
-        {inner}
-      </a>
-    );
+    return <a href={href} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{inner}</a>;
   }
   return inner;
 }
 
-function SectionLabel({
-  num,
-  label,
-  icon: Icon,
-}: {
-  num: string;
-  label: string;
-  icon?: React.ElementType;
-}) {
+function SectionLabel({ num, label, icon: Icon }: { num: string; label: string; icon?: React.ElementType }) {
   return (
     <div className="flex items-baseline gap-4 mb-8 border-b border-rule pb-4">
       <span className="font-mono text-xs text-graphite">{num}</span>
-      <h2 className="font-serif text-3xl md:text-4xl tracking-tight text-ink">
-        {label}
-      </h2>
+      <h2 className="font-serif text-3xl md:text-4xl tracking-tight text-ink">{label}</h2>
       {Icon && <Icon className="w-4 h-4 text-rule ml-auto" strokeWidth={1.5} />}
     </div>
   );

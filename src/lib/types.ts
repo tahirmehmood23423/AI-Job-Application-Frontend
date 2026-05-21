@@ -72,15 +72,8 @@ export interface ParsedResume {
 
 // ---------- Module 2: Match types ----------
 
-export type RequirementType =
-  | "skill"
-  | "experience"
-  | "education"
-  | "certification"
-  | "other";
-
+export type RequirementType = "skill" | "experience" | "education" | "certification" | "other";
 export type RequirementImportance = "required" | "preferred" | "nice_to_have";
-
 export type RequirementMatchStatus = "match" | "partial" | "missing";
 
 export interface MatchedRequirement {
@@ -101,14 +94,80 @@ export interface MatchRequest {
 export interface MatchResult {
   request_id: string;
   matched_at: string;
-  overall_score: number; // 0–100
+  overall_score: number;
   verdict: "strong" | "moderate" | "weak";
-  semantic_similarity: number; // 0–1
-  requirement_coverage: number; // 0–1
+  semantic_similarity: number;
+  requirement_coverage: number;
   matched_requirements: MatchedRequirement[];
   matched_skills: string[];
   missing_skills: string[];
   summary: string;
   job_title: string | null;
   company: string | null;
+}
+
+// ---------- Module 3: Tailor types ----------
+
+export type TailorMode = "strict" | "auto";
+
+export type ChangeType =
+  | "summary_rewritten"
+  | "skill_reordered"
+  | "skill_emphasised"
+  | "experience_bullet_rewritten"
+  | "experience_bullets_reordered"
+  | "project_description_rewritten"
+  | "projects_reordered";
+
+export type ChangeImpact = "high" | "medium" | "low";
+
+export interface Change {
+  id: string;
+  type: ChangeType;
+  impact: ChangeImpact;
+  section: string;
+  rationale: string;
+  before: string | null;
+  after: string | null;
+  before_list: string[] | null;
+  after_list: string[] | null;
+}
+
+export type ATSSeverity = "error" | "warning" | "info";
+
+export interface ATSIssue {
+  severity: ATSSeverity;
+  rule: string;
+  message: string;
+  where: string | null;
+}
+
+export interface ATSReport {
+  score: number;
+  issues: ATSIssue[];
+  keyword_coverage: number;
+  keyword_matches: string[];
+  keyword_misses: string[];
+}
+
+export interface TailorRequest {
+  resume: ParsedResume;
+  job_description: string;
+  job_title?: string | null;
+  company?: string | null;
+  mode: TailorMode;
+}
+
+export interface TailorResult {
+  request_id: string;
+  tailored_at: string;
+  mode: TailorMode;
+  original: ParsedResume;
+  tailored: ParsedResume;
+  changes: Change[];
+  ats_report: ATSReport;
+  job_title: string | null;
+  company: string | null;
+  total_changes: number;
+  high_impact_changes: number;
 }
