@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { Target, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import type { MatchResult, ParsedResume } from "@/lib/types";
 import { matchJob, ApiError } from "@/lib/api";
 import { MatchResults } from "./MatchResults";
@@ -39,29 +39,33 @@ export function MatchPanel({ resume }: MatchPanelProps) {
     } catch (err) {
       setState({
         kind: "error",
-        message:
-          err instanceof ApiError
-            ? err.message
-            : "Match failed. Please try again.",
+        message: err instanceof ApiError ? err.message : "Match failed. Please try again.",
       });
     }
   };
 
   return (
-    <section className="border-t border-rule pt-16 mt-16">
-      {/* Header */}
+    <div className="card overflow-hidden">
+      {/* Header toggle */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-baseline justify-between gap-4 mb-6 group"
+        className="w-full flex items-center justify-between gap-4 p-6 hover:bg-bg transition-colors group"
       >
-        <div className="flex items-baseline gap-4">
-          <span className="font-mono text-xs text-graphite">07</span>
-          <h2 className="font-serif text-3xl md:text-4xl tracking-tight text-ink group-hover:text-accent transition-colors">
-            Match against a job
-          </h2>
+        <div className="flex items-center gap-4">
+          <div className="w-11 h-11 bg-primary-light rounded-xl flex items-center justify-center flex-shrink-0">
+            <Target className="w-5 h-5 text-primary" />
+          </div>
+          <div className="text-left">
+            <p className="font-bold text-ink text-lg group-hover:text-primary transition-colors">
+              Match against a job
+            </p>
+            <p className="text-sm text-muted mt-0.5">
+              Score your résumé against a job description
+            </p>
+          </div>
         </div>
-        <span className="text-graphite group-hover:text-ink transition-colors">
-          {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        <span className="text-muted-light group-hover:text-muted transition-colors flex-shrink-0">
+          {open ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
         </span>
       </button>
 
@@ -71,117 +75,111 @@ export function MatchPanel({ resume }: MatchPanelProps) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <p className="text-graphite max-w-2xl mb-8 leading-relaxed">
-              Paste a job description below. The matcher will score it against
-              your résumé using semantic similarity and a requirement-by-requirement
-              check — and tell you what you're missing.
-            </p>
+            <div className="px-6 pb-8 border-t border-border pt-6 space-y-5">
+              <p className="text-muted text-base leading-relaxed max-w-2xl">
+                Paste a job description below. The matcher scores it against your résumé using
+                semantic similarity and a requirement-by-requirement check — and tells you exactly
+                what's missing.
+              </p>
 
-            {/* Inputs */}
-            <div className="grid md:grid-cols-2 gap-6 mb-6">
+              {/* Optional fields */}
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-ink mb-1.5">
+                    Job title <span className="font-normal text-muted">(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={jobTitle}
+                    onChange={(e) => setJobTitle(e.target.value)}
+                    placeholder="e.g. Senior ML Engineer"
+                    className="input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-ink mb-1.5">
+                    Company <span className="font-normal text-muted">(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    placeholder="e.g. Anthropic"
+                    className="input"
+                  />
+                </div>
+              </div>
+
+              {/* JD textarea */}
               <div>
-                <label className="block text-xs uppercase tracking-[0.2em] text-graphite mb-2">
-                  Job title (optional)
-                </label>
-                <input
-                  type="text"
-                  value={jobTitle}
-                  onChange={(e) => setJobTitle(e.target.value)}
-                  placeholder="e.g. Senior ML Engineer"
-                  className="w-full px-4 py-3 bg-cream border border-rule text-ink focus:border-ink outline-none transition-colors"
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-sm font-semibold text-ink">
+                    Job description
+                  </label>
+                  <span className={`text-xs font-mono ${jd.length < 50 ? "text-muted-light" : "text-success"}`}>
+                    {jd.length < 50 ? `${50 - jd.length} more chars needed` : `${jd.length} chars · ready`}
+                  </span>
+                </div>
+                <textarea
+                  value={jd}
+                  onChange={(e) => setJd(e.target.value)}
+                  placeholder="Paste the full job description here. The more detail, the better the match score."
+                  rows={9}
+                  className="input font-sans"
                 />
               </div>
-              <div>
-                <label className="block text-xs uppercase tracking-[0.2em] text-graphite mb-2">
-                  Company (optional)
-                </label>
-                <input
-                  type="text"
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  placeholder="e.g. Anthropic"
-                  className="w-full px-4 py-3 bg-cream border border-rule text-ink focus:border-ink outline-none transition-colors"
-                />
-              </div>
-            </div>
 
-            <div>
-              <label className="block text-xs uppercase tracking-[0.2em] text-graphite mb-2">
-                Job description
-              </label>
-              <textarea
-                value={jd}
-                onChange={(e) => setJd(e.target.value)}
-                placeholder="Paste the full job description here. The more detail, the better the match score."
-                rows={10}
-                className="w-full px-4 py-3 bg-cream border border-rule text-ink focus:border-ink outline-none transition-colors font-serif text-base leading-relaxed resize-y"
-              />
-              <div className="flex items-center justify-between mt-2">
-                <p className="text-xs text-graphite">
-                  {jd.length} characters · {jd.length < 50 ? "Need at least 50" : "Ready to match"}
-                </p>
-              </div>
-            </div>
-
-            {/* Action */}
-            <div className="mt-6 flex flex-wrap items-center gap-4">
-              <button
-                onClick={runMatch}
-                disabled={!canSubmit}
-                className={`
-                  inline-flex items-center gap-2 px-6 py-3 text-sm transition-colors
-                  ${canSubmit
-                    ? "bg-ink text-cream hover:bg-graphite"
-                    : "bg-rule text-graphite cursor-not-allowed"}
-                `}
-              >
-                {state.kind === "loading" ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Matching…
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4" />
-                    Run match
-                  </>
+              {/* Actions */}
+              <div className="flex flex-wrap items-center gap-4">
+                <button onClick={runMatch} disabled={!canSubmit} className="btn-primary">
+                  {state.kind === "loading" ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Matching…
+                    </>
+                  ) : (
+                    <>
+                      <Target className="w-4 h-4" />
+                      Run match
+                    </>
+                  )}
+                </button>
+                {state.kind === "loading" && (
+                  <p className="text-sm text-muted italic">
+                    Embedding + requirement extraction — usually 8–15 seconds.
+                  </p>
                 )}
-              </button>
-              {state.kind === "loading" && (
-                <p className="text-xs text-graphite italic">
-                  Embedding + requirement extraction — usually 8–15 seconds.
-                </p>
+              </div>
+
+              {/* Error */}
+              {state.kind === "error" && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-error-light border border-error-border text-error px-4 py-3 rounded-xl text-sm font-medium"
+                >
+                  {state.message}
+                </motion.div>
+              )}
+
+              {/* Result */}
+              {state.kind === "result" && (
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  className="mt-4"
+                >
+                  <MatchResults data={state.data} />
+                </motion.div>
               )}
             </div>
-
-            {/* Error */}
-            {state.kind === "error" && (
-              <motion.div
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-6 p-4 border border-rule bg-cream text-sm text-accentDark"
-              >
-                {state.message}
-              </motion.div>
-            )}
-
-            {/* Result */}
-            {state.kind === "result" && (
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                className="mt-12"
-              >
-                <MatchResults data={state.data} />
-              </motion.div>
-            )}
           </motion.div>
         )}
       </AnimatePresence>
-    </section>
+    </div>
   );
 }

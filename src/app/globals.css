@@ -2,84 +2,116 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --paper: #f5f1ea;
-  --cream: #faf7f0;
-  --ink: #1a1a1a;
-  --rule: #d9d2c2;
-  --accent: #b8472f;
-}
-
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
 }
 
 html,
 body {
-  background: var(--paper);
-  color: var(--ink);
-  font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "ss01" 1;
+  background: #f1f5f9;
+  color: #1e293b;
+  font-size: 16px;
+  line-height: 1.6;
 }
 
-/* Subtle paper grain — gives it warmth without being noisy */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  background-image:
-    radial-gradient(circle at 1px 1px, rgba(26, 26, 26, 0.025) 1px, transparent 0);
-  background-size: 3px 3px;
-  mix-blend-mode: multiply;
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ---- Selection ---- */
+::selection { background: #bfdbfe; color: #1e40af; }
+
+/* ---- Animations ---- */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+.fade-up {
+  animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
-/* Drop cap utility */
-.drop-cap::first-letter {
-  font-family: var(--font-serif), Georgia, serif;
-  font-size: 4.5rem;
-  line-height: 0.85;
-  float: left;
-  margin: 0.15rem 0.6rem 0 0;
+/* ---- Card base ---- */
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+}
+.card-hover {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.card-hover:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+/* ---- Inputs ---- */
+.input {
+  width: 100%;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  color: #1e293b;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.10);
+}
+.input::placeholder { color: #94a3b8; }
+
+textarea.input { resize: vertical; line-height: 1.65; }
+
+/* ---- Btn ---- */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #2563eb;
+  color: #ffffff;
+  padding: 11px 22px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+.btn-primary:hover:not(:disabled) { background: #1d4ed8; }
+.btn-primary:active:not(:disabled) { transform: scale(0.98); }
+.btn-primary:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  color: #1e293b;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 15px;
   font-weight: 500;
-  color: var(--accent);
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
 }
+.btn-secondary:hover { background: #f8fafc; border-color: #cbd5e1; }
 
-/* Smooth fade-in for staggered reveals */
-@keyframes editorial-rise {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.rise {
-  animation: editorial-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
-}
-
-/* Scrollbar — minimal */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-track {
-  background: var(--paper);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--rule);
-  border-radius: 0;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #b3aa95;
-}
-
-/* Selection */
-::selection {
-  background: var(--accent);
-  color: var(--cream);
+/* ---- Badge ---- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
 }

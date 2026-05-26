@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 import {
-  Mail, Phone, MapPin, Linkedin, Github, Globe,
-  Briefcase, GraduationCap, Code2, Award,
-  Copy, Download, RotateCcw, Check,
+  Mail, Phone, MapPin, Linkedin, Globe,
+  Briefcase, GraduationCap, Code2, Award, FolderOpen,
+  Copy, Download, RotateCcw, Check, AlertTriangle, ExternalLink,
 } from "lucide-react";
 import { useState } from "react";
 import type { ParsedResume } from "@/lib/types";
@@ -16,6 +16,12 @@ interface ResultsProps {
   data: ParsedResume;
   onReset: () => void;
 }
+
+const stagger = { animate: { transition: { staggerChildren: 0.07 } } };
+const fadeUp = {
+  initial: { opacity: 0, y: 18 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } },
+};
 
 export function Results({ data, onReset }: ResultsProps) {
   const [copied, setCopied] = useState(false);
@@ -36,270 +42,377 @@ export function Results({ data, onReset }: ResultsProps) {
     URL.revokeObjectURL(url);
   };
 
-  const stagger = { animate: { transition: { staggerChildren: 0.07 } } };
-  const item = {
-    initial: { opacity: 0, y: 12 },
-    animate: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] as const } },
-  };
-
   const skillCount =
     data.skills.technical.length + data.skills.tools.length +
     data.skills.soft.length + data.skills.languages.length;
 
   return (
-    <motion.div variants={stagger} initial="initial" animate="animate" className="space-y-16">
-      {/* Action bar */}
-      <motion.div variants={item} className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-rule">
-        <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-graphite mb-1">Parse Complete</p>
-          <p className="font-mono text-[11px] text-graphite">
-            ID {data.request_id.slice(0, 8)} · {data.raw_text_length.toLocaleString()} chars
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <button onClick={copyJson} className="inline-flex items-center gap-2 px-4 py-2 border border-rule bg-cream hover:bg-paper text-sm transition-colors">
-            {copied ? <Check className="w-3.5 h-3.5 text-accent" /> : <Copy className="w-3.5 h-3.5" />}
-            {copied ? "Copied" : "Copy JSON"}
-          </button>
-          <button onClick={downloadJson} className="inline-flex items-center gap-2 px-4 py-2 border border-rule bg-cream hover:bg-paper text-sm transition-colors">
-            <Download className="w-3.5 h-3.5" />
-            Download
-          </button>
-          <button onClick={onReset} className="inline-flex items-center gap-2 px-4 py-2 bg-ink text-cream hover:bg-graphite text-sm transition-colors">
-            <RotateCcw className="w-3.5 h-3.5" />
-            Parse another
-          </button>
+    <motion.div variants={stagger} initial="initial" animate="animate" className="space-y-5">
+
+      {/* ── Action bar ── */}
+      <motion.div variants={fadeUp} className="card p-5">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-11 h-11 bg-success-light rounded-xl flex items-center justify-center flex-shrink-0">
+              <Check className="w-5 h-5 text-success" strokeWidth={2.5} />
+            </div>
+            <div>
+              <p className="font-bold text-ink text-base">Parse Complete</p>
+              <p className="text-sm text-muted font-mono mt-0.5">
+                ID {data.request_id.slice(0, 8)} · {data.raw_text_length.toLocaleString()} chars extracted
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button onClick={copyJson} className="btn-secondary text-sm">
+              {copied ? <Check className="w-4 h-4 text-success" /> : <Copy className="w-4 h-4" />}
+              {copied ? "Copied!" : "Copy JSON"}
+            </button>
+            <button onClick={downloadJson} className="btn-secondary text-sm">
+              <Download className="w-4 h-4" />
+              Download
+            </button>
+            <button onClick={onReset} className="btn-primary text-sm">
+              <RotateCcw className="w-4 h-4" />
+              Parse another
+            </button>
+          </div>
         </div>
       </motion.div>
 
-      {/* Masthead / Personal */}
-      <motion.section variants={item}>
+      {/* ── Personal info ── */}
+      <motion.div variants={fadeUp} className="card p-8">
         {data.personal.full_name && (
-          <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl text-ink tracking-tightest leading-[0.9] mb-8">
+          <h1 className="font-serif text-4xl md:text-6xl font-bold text-ink leading-tight tracking-tight mb-6">
             {data.personal.full_name}
           </h1>
         )}
-        <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-graphite">
-          {data.personal.email && <ContactItem icon={Mail} text={data.personal.email} href={`mailto:${data.personal.email}`} />}
-          {data.personal.phone && <ContactItem icon={Phone} text={data.personal.phone} />}
-          {data.personal.location && <ContactItem icon={MapPin} text={data.personal.location} />}
-          {data.personal.linkedin_url && <ContactItem icon={Linkedin} text="LinkedIn" href={data.personal.linkedin_url} />}
-          {data.personal.github_url && <ContactItem icon={Github} text="GitHub" href={data.personal.github_url} />}
-          {data.personal.portfolio_url && <ContactItem icon={Globe} text="Portfolio" href={data.personal.portfolio_url} />}
+        <div className="flex flex-wrap gap-3">
+          {data.personal.email && (
+            <ContactChip icon={Mail} text={data.personal.email} href={`mailto:${data.personal.email}`} />
+          )}
+          {data.personal.phone && <ContactChip icon={Phone} text={data.personal.phone} />}
+          {data.personal.location && <ContactChip icon={MapPin} text={data.personal.location} />}
+          {data.personal.linkedin_url && (
+            <ContactChip icon={Linkedin} text="LinkedIn" href={data.personal.linkedin_url} />
+          )}
+          {data.personal.github_url && (
+            <ContactChip
+              icon={() => (
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.79-.26.79-.58v-2.23c-3.34.72-4.03-1.42-4.03-1.42-.55-1.39-1.33-1.76-1.33-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.005 2.05.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.19.69.8.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z" />
+                </svg>
+              )}
+              text="GitHub"
+              href={data.personal.github_url}
+            />
+          )}
+          {data.personal.portfolio_url && (
+            <ContactChip icon={Globe} text="Portfolio" href={data.personal.portfolio_url} />
+          )}
         </div>
-      </motion.section>
+      </motion.div>
 
-      {/* Summary */}
+      {/* ── Summary ── */}
       {data.summary && (
-        <motion.section variants={item}>
-          <SectionLabel num="01" label="Summary" />
-          <p className="drop-cap font-serif text-xl md:text-2xl leading-relaxed text-ink max-w-3xl">
-            {data.summary}
-          </p>
-        </motion.section>
+        <motion.div variants={fadeUp} className="card p-8">
+          <SectionHeader label="Summary" num="01" />
+          <p className="text-ink text-lg leading-relaxed max-w-3xl">{data.summary}</p>
+        </motion.div>
       )}
 
-      {/* Skills */}
+      {/* ── Skills ── */}
       {skillCount > 0 && (
-        <motion.section variants={item}>
-          <SectionLabel num="02" label="Skills" icon={Code2} />
-          <div className="grid md:grid-cols-2 gap-x-12 gap-y-10">
-            {data.skills.technical.length > 0 && <SkillGroup title="Technical" items={data.skills.technical} />}
-            {data.skills.tools.length > 0 && <SkillGroup title="Tools" items={data.skills.tools} />}
-            {data.skills.soft.length > 0 && <SkillGroup title="Soft" items={data.skills.soft} />}
-            {data.skills.languages.length > 0 && <SkillGroup title="Languages" items={data.skills.languages} />}
+        <motion.div variants={fadeUp} className="card p-8">
+          <SectionHeader label="Skills" num="02" icon={Code2} />
+          <div className="grid sm:grid-cols-2 gap-8">
+            {data.skills.technical.length > 0 && (
+              <SkillGroup title="Technical" items={data.skills.technical} variant="blue" />
+            )}
+            {data.skills.tools.length > 0 && (
+              <SkillGroup title="Tools & Frameworks" items={data.skills.tools} variant="violet" />
+            )}
+            {data.skills.soft.length > 0 && (
+              <SkillGroup title="Soft Skills" items={data.skills.soft} variant="neutral" />
+            )}
+            {data.skills.languages.length > 0 && (
+              <SkillGroup title="Languages" items={data.skills.languages} variant="green" />
+            )}
           </div>
-        </motion.section>
+        </motion.div>
       )}
 
-      {/* Experience */}
+      {/* ── Experience ── */}
       {data.experience.length > 0 && (
-        <motion.section variants={item}>
-          <SectionLabel num="03" label="Experience" icon={Briefcase} />
-          <div className="space-y-12">
-            {data.experience.map((exp, i) => (
-              <article key={i} className="grid md:grid-cols-[180px_1fr] gap-6 md:gap-12">
-                <div className="font-mono text-xs text-graphite uppercase tracking-wider">
-                  <div>{formatDate(exp.start_date)}</div>
-                  <div>— {exp.is_current ? "Present" : formatDate(exp.end_date)}</div>
-                  {exp.location && (
-                    <div className="mt-2 text-rule normal-case tracking-normal font-sans">{exp.location}</div>
-                  )}
-                </div>
-                <div>
-                  <h3 className="font-serif text-2xl md:text-3xl text-ink tracking-tight mb-1">{exp.title}</h3>
-                  <p className="text-sm text-accent mb-4 italic">{exp.company}</p>
-                  {exp.responsibilities.length > 0 && (
-                    <ul className="space-y-2 text-ink text-[15px] leading-relaxed max-w-2xl">
-                      {exp.responsibilities.map((r, j) => (
-                        <li key={j} className="flex gap-3">
-                          <span className="text-rule flex-shrink-0 mt-2">—</span>
-                          <span>{r}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  {exp.technologies.length > 0 && (
-                    <div className="mt-4 flex flex-wrap gap-1.5">
-                      {exp.technologies.map((t) => (
-                        <span key={t} className="text-[11px] font-mono text-graphite border border-rule px-2 py-0.5">{t}</span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
-        </motion.section>
-      )}
-
-      {/* Education */}
-      {data.education.length > 0 && (
-        <motion.section variants={item}>
-          <SectionLabel num="04" label="Education" icon={GraduationCap} />
+        <motion.div variants={fadeUp} className="card p-8">
+          <SectionHeader label="Experience" num="03" icon={Briefcase} />
           <div className="space-y-8">
-            {data.education.map((edu, i) => (
-              <article key={i} className="grid md:grid-cols-[180px_1fr] gap-6 md:gap-12">
-                <div className="font-mono text-xs text-graphite uppercase tracking-wider">
-                  <div>{formatDate(edu.start_date)}</div>
-                  <div>— {formatDate(edu.end_date)}</div>
+            {data.experience.map((exp, i) => (
+              <article
+                key={i}
+                className={i < data.experience.length - 1 ? "pb-8 border-b border-border" : ""}
+              >
+                <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-ink">{exp.title}</h3>
+                    <p className="text-primary font-semibold text-base mt-0.5">{exp.company}</p>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <p className="text-sm font-semibold text-ink">
+                      {exp.start_date ?? "—"} — {exp.is_current ? "Present" : (exp.end_date ?? "—")}
+                    </p>
+                    {exp.location && (
+                      <p className="text-sm text-muted mt-0.5">{exp.location}</p>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-serif text-2xl text-ink tracking-tight mb-1">
-                    {edu.degree || "Degree"}
-                    {edu.field_of_study && <span className="text-graphite">, {edu.field_of_study}</span>}
-                  </h3>
-                  <p className="text-sm text-accent italic">{edu.institution}</p>
-                  {edu.gpa && <p className="text-xs text-graphite mt-2 font-mono">GPA · {edu.gpa}</p>}
-                </div>
-              </article>
-            ))}
-          </div>
-        </motion.section>
-      )}
 
-      {/* Projects */}
-      {data.projects.length > 0 && (
-        <motion.section variants={item}>
-          <SectionLabel num="05" label="Projects" />
-          <div className="grid md:grid-cols-2 gap-8">
-            {data.projects.map((proj, i) => (
-              <article key={i} className="border-t border-rule pt-5">
-                <h3 className="font-serif text-xl text-ink tracking-tight mb-2">
-                  {proj.url ? (
-                    <a href={proj.url} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">
-                      {proj.name}
-                    </a>
-                  ) : (
-                    proj.name
-                  )}
-                </h3>
-                {proj.description && (
-                  <p className="text-sm text-graphite leading-relaxed mb-3">{proj.description}</p>
+                {exp.responsibilities.length > 0 && (
+                  <ul className="space-y-2.5 mt-4">
+                    {exp.responsibilities.map((r, j) => (
+                      <li key={j} className="flex gap-3 items-start text-base text-ink leading-relaxed">
+                        <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-primary mt-2.5 block" />
+                        <span>{r}</span>
+                      </li>
+                    ))}
+                  </ul>
                 )}
-                {proj.technologies.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5">
-                    {proj.technologies.map((t) => (
-                      <span key={t} className="text-[11px] font-mono text-graphite border border-rule px-2 py-0.5">{t}</span>
+
+                {exp.technologies.length > 0 && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {exp.technologies.map((t) => (
+                      <span
+                        key={t}
+                        className="text-sm font-mono text-muted bg-bg border border-border px-2.5 py-0.5 rounded-lg"
+                      >
+                        {t}
+                      </span>
                     ))}
                   </div>
                 )}
               </article>
             ))}
           </div>
-        </motion.section>
+        </motion.div>
       )}
 
-      {/* Certifications */}
-      {data.certifications.length > 0 && (
-        <motion.section variants={item}>
-          <SectionLabel num="06" label="Certifications" icon={Award} />
-          <ul className="space-y-3">
-            {data.certifications.map((cert, i) => (
-              <li key={i} className="flex justify-between items-baseline gap-4 border-b border-rule pb-3">
+      {/* ── Education ── */}
+      {data.education.length > 0 && (
+        <motion.div variants={fadeUp} className="card p-8">
+          <SectionHeader label="Education" num="04" icon={GraduationCap} />
+          <div className="space-y-6">
+            {data.education.map((edu, i) => (
+              <article
+                key={i}
+                className={
+                  i < data.education.length - 1
+                    ? "pb-6 border-b border-border flex flex-wrap items-start justify-between gap-4"
+                    : "flex flex-wrap items-start justify-between gap-4"
+                }
+              >
                 <div>
-                  <span className="font-serif text-lg text-ink">{cert.name}</span>
-                  {cert.issuer && <span className="text-sm text-graphite italic"> · {cert.issuer}</span>}
+                  <h3 className="text-xl font-bold text-ink">
+                    {edu.degree ?? "Degree"}
+                    {edu.field_of_study && (
+                      <span className="font-normal text-muted">, {edu.field_of_study}</span>
+                    )}
+                  </h3>
+                  <p className="text-primary font-semibold text-base mt-0.5">{edu.institution}</p>
+                  {edu.gpa && (
+                    <p className="text-sm text-muted mt-1 font-mono">GPA: {edu.gpa}</p>
+                  )}
+                </div>
+                <div className="text-sm font-semibold text-ink flex-shrink-0">
+                  {edu.start_date ?? "—"} — {edu.end_date ?? "—"}
+                </div>
+              </article>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
+      {/* ── Projects ── */}
+      {data.projects.length > 0 && (
+        <motion.div variants={fadeUp} className="card p-8">
+          <SectionHeader label="Projects" num="05" icon={FolderOpen} />
+          <div className="grid sm:grid-cols-2 gap-5">
+            {data.projects.map((proj, i) => (
+              <article
+                key={i}
+                className="bg-bg border border-border rounded-xl p-5 hover:border-primary-border hover:bg-primary-light/30 transition-colors"
+              >
+                <h3 className="text-base font-bold text-ink mb-2">
+                  {proj.url ? (
+                    <a
+                      href={proj.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 hover:text-primary transition-colors"
+                    >
+                      {proj.name}
+                      <ExternalLink className="w-3.5 h-3.5 text-muted" />
+                    </a>
+                  ) : (
+                    proj.name
+                  )}
+                </h3>
+                {proj.description && (
+                  <p className="text-muted text-sm leading-relaxed mb-3">{proj.description}</p>
+                )}
+                {proj.technologies.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {proj.technologies.map((t) => (
+                      <span
+                        key={t}
+                        className="text-xs font-mono text-muted bg-surface border border-border px-2 py-0.5 rounded-md"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
+      {/* ── Certifications ── */}
+      {data.certifications.length > 0 && (
+        <motion.div variants={fadeUp} className="card p-8">
+          <SectionHeader label="Certifications" num="06" icon={Award} />
+          <div className="divide-y divide-border">
+            {data.certifications.map((cert, i) => (
+              <div key={i} className="flex items-center justify-between gap-4 py-4 first:pt-0 last:pb-0">
+                <div>
+                  <p className="font-semibold text-ink text-base">{cert.name}</p>
+                  {cert.issuer && <p className="text-sm text-muted mt-0.5">{cert.issuer}</p>}
                 </div>
                 {cert.date_obtained && (
-                  <span className="font-mono text-xs text-graphite">{cert.date_obtained}</span>
+                  <span className="text-sm font-mono text-muted bg-bg border border-border px-3 py-1 rounded-lg flex-shrink-0">
+                    {cert.date_obtained}
+                  </span>
                 )}
-              </li>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
+      {/* ── Parser warnings ── */}
+      {data.extraction_warnings.length > 0 && (
+        <motion.div
+          variants={fadeUp}
+          className="bg-warning-light border border-warning-border rounded-xl p-5"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0" />
+            <p className="font-semibold text-warning text-base">Parser Notes</p>
+          </div>
+          <ul className="space-y-1.5">
+            {data.extraction_warnings.map((w, i) => (
+              <li key={i} className="text-sm text-muted">• {w}</li>
             ))}
           </ul>
-        </motion.section>
+        </motion.div>
       )}
 
-      {/* Warnings */}
-      {data.extraction_warnings.length > 0 && (
-        <motion.section variants={item} className="border-t border-rule pt-6">
-          <p className="text-xs uppercase tracking-[0.2em] text-accentDark mb-3">Notes from the parser</p>
-          <ul className="space-y-1 text-sm text-graphite italic">
-            {data.extraction_warnings.map((w, i) => <li key={i}>— {w}</li>)}
-          </ul>
-        </motion.section>
-      )}
-
-      {/* MODULE 2 — Match panel */}
-      <motion.div variants={item}>
-        <MatchPanel resume={data} />
-      </motion.div>
-
-      {/* MODULE 3 — Tailor panel */}
-      <motion.div variants={item}>
-        <TailorPanel resume={data} />
-      </motion.div>
-
-      {/* MODULE 4 — Cover letter panel */}
-      <motion.div variants={item}>
-        <CoverLetterPanel resume={data} matchResult={null} />
+      {/* ── AI Modules ── */}
+      <motion.div variants={fadeUp}>
+        <div className="flex items-center gap-3 mb-4 mt-6">
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-xs font-semibold text-muted-light uppercase tracking-widest px-3">
+            AI Modules
+          </span>
+          <div className="h-px flex-1 bg-border" />
+        </div>
+        <div className="space-y-4">
+          <MatchPanel resume={data} />
+          <TailorPanel resume={data} />
+          <CoverLetterPanel resume={data} matchResult={null} />
+        </div>
       </motion.div>
     </motion.div>
   );
 }
 
-// ---------- helpers ----------
+// ── Helpers ──
 
-function ContactItem({ icon: Icon, text, href }: { icon: React.ElementType; text: string; href?: string }) {
+function ContactChip({
+  icon: Icon,
+  text,
+  href,
+}: {
+  icon: React.ElementType;
+  text: string;
+  href?: string;
+}) {
   const inner = (
-    <span className="inline-flex items-center gap-1.5">
-      <Icon className="w-3.5 h-3.5" strokeWidth={1.5} />
-      <span>{text}</span>
+    <span className="inline-flex items-center gap-2 bg-bg border border-border px-3.5 py-2 rounded-xl text-sm font-medium text-ink hover:border-primary-border hover:text-primary transition-colors">
+      <Icon className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} />
+      {text}
     </span>
   );
-  if (href) {
-    return <a href={href} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">{inner}</a>;
-  }
+  if (href)
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer">
+        {inner}
+      </a>
+    );
   return inner;
 }
 
-function SectionLabel({ num, label, icon: Icon }: { num: string; label: string; icon?: React.ElementType }) {
+function SectionHeader({
+  num,
+  label,
+  icon: Icon,
+}: {
+  num: string;
+  label: string;
+  icon?: React.ElementType;
+}) {
   return (
-    <div className="flex items-baseline gap-4 mb-8 border-b border-rule pb-4">
-      <span className="font-mono text-xs text-graphite">{num}</span>
-      <h2 className="font-serif text-3xl md:text-4xl tracking-tight text-ink">{label}</h2>
-      {Icon && <Icon className="w-4 h-4 text-rule ml-auto" strokeWidth={1.5} />}
+    <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
+      {Icon && (
+        <div className="w-9 h-9 bg-primary-light rounded-lg flex items-center justify-center flex-shrink-0">
+          <Icon className="w-5 h-5 text-primary" strokeWidth={1.5} />
+        </div>
+      )}
+      <h2 className="text-2xl font-bold text-ink">{label}</h2>
+      <span className="ml-auto font-mono text-xs text-muted-light">{num}</span>
     </div>
   );
 }
 
-function SkillGroup({ title, items }: { title: string; items: string[] }) {
+const SKILL_STYLES = {
+  blue: "bg-primary-light text-primary border-primary-border",
+  violet: "bg-violet-light text-violet border-violet-border",
+  green: "bg-success-light text-success border-success-border",
+  neutral: "bg-bg text-ink border-border",
+};
+
+function SkillGroup({
+  title,
+  items,
+  variant,
+}: {
+  title: string;
+  items: string[];
+  variant: keyof typeof SKILL_STYLES;
+}) {
   return (
     <div>
-      <p className="text-xs uppercase tracking-[0.2em] text-graphite mb-3">{title}</p>
-      <div className="flex flex-wrap gap-x-2 gap-y-1">
-        {items.map((s, i) => (
-          <span key={s} className="text-ink">
+      <p className="text-xs font-bold text-muted uppercase tracking-widest mb-3">{title}</p>
+      <div className="flex flex-wrap gap-2">
+        {items.map((s) => (
+          <span
+            key={s}
+            className={`text-sm font-medium px-3 py-1 rounded-full border ${SKILL_STYLES[variant]}`}
+          >
             {s}
-            {i < items.length - 1 && <span className="text-rule ml-2">·</span>}
           </span>
         ))}
       </div>
     </div>
   );
-}
-
-function formatDate(d: string | null): string {
-  if (!d) return "—";
-  return d;
 }

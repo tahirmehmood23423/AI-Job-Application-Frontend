@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, X, AlertCircle } from "lucide-react";
+import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import type { MatchResult, RequirementMatchStatus } from "@/lib/types";
 
 interface Props {
@@ -9,127 +9,124 @@ interface Props {
 }
 
 export function MatchResults({ data }: Props) {
-  const scoreColor =
-    data.verdict === "strong"
-      ? "text-accent"
-      : data.verdict === "moderate"
-      ? "text-ink"
-      : "text-graphite";
+  const verdictStyle = {
+    strong: { bar: "bg-success", text: "text-success", bg: "bg-success-light", border: "border-success-border" },
+    moderate: { bar: "bg-primary", text: "text-primary", bg: "bg-primary-light", border: "border-primary-border" },
+    weak: { bar: "bg-warning", text: "text-warning", bg: "bg-warning-light", border: "border-warning-border" },
+  }[data.verdict];
 
   return (
-    <div className="space-y-12">
-      {/* The headline number */}
-      <div className="grid md:grid-cols-[auto_1fr] gap-8 md:gap-12 items-start pb-8 border-b border-rule">
-        <div>
-          <div className={`font-serif text-8xl md:text-9xl leading-none tracking-tightest ${scoreColor}`}>
-            {data.overall_score}
-            <span className="text-2xl text-graphite">/100</span>
+    <div className="space-y-8">
+      {/* Score header */}
+      <div className={`rounded-2xl border ${verdictStyle.bg} ${verdictStyle.border} p-6 md:p-8`}>
+        <div className="flex flex-wrap items-start gap-6 md:gap-10">
+          <div className="flex-shrink-0">
+            <div className={`font-serif text-8xl md:text-9xl font-bold leading-none tracking-tight ${verdictStyle.text}`}>
+              {data.overall_score}
+            </div>
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-sm text-muted font-mono">/100</span>
+              <span className={`text-xs font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full border ${verdictStyle.bg} ${verdictStyle.text} ${verdictStyle.border}`}>
+                {data.verdict} match
+              </span>
+            </div>
           </div>
-          <div className="mt-3 text-xs uppercase tracking-[0.2em] text-graphite">
-            {data.verdict} match
-          </div>
-        </div>
 
-        <div className="md:pt-6">
-          <p className="font-serif text-xl md:text-2xl leading-relaxed text-ink mb-6 max-w-xl">
-            {data.summary}
-          </p>
-
-          {/* Sub-scores */}
-          <div className="grid sm:grid-cols-2 gap-6 max-w-md">
-            <SubScore
-              label="Semantic similarity"
-              value={data.semantic_similarity}
-              hint="How close the documents are in meaning"
-            />
-            <SubScore
-              label="Requirement coverage"
-              value={data.requirement_coverage}
-              hint="Weighted by importance"
-            />
+          <div className="flex-1 min-w-0 pt-2">
+            <p className="text-ink text-lg md:text-xl leading-relaxed font-medium mb-6 max-w-xl">
+              {data.summary}
+            </p>
+            <div className="grid sm:grid-cols-2 gap-5 max-w-md">
+              <SubScore
+                label="Semantic similarity"
+                value={data.semantic_similarity}
+                barColor={verdictStyle.bar}
+              />
+              <SubScore
+                label="Requirement coverage"
+                value={data.requirement_coverage}
+                barColor={verdictStyle.bar}
+              />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Matched skills */}
       {data.matched_skills.length > 0 && (
-        <Section title="Skills you have" num="01">
+        <ResultSection title="Skills you have" num="01">
           <div className="flex flex-wrap gap-2">
             {data.matched_skills.map((s, i) => (
               <motion.span
                 key={s}
-                initial={{ opacity: 0, y: 4 }}
+                initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03 }}
-                className="inline-flex items-center gap-1.5 px-3 py-1 border border-accent text-sm"
-                style={{ color: "#B8472F" }}
+                transition={{ delay: i * 0.025 }}
+                className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1 rounded-full bg-success-light text-success border border-success-border"
               >
-                <Check className="w-3 h-3" strokeWidth={2} />
+                <CheckCircle className="w-3.5 h-3.5" strokeWidth={2.5} />
                 {s}
               </motion.span>
             ))}
           </div>
-        </Section>
+        </ResultSection>
       )}
 
       {/* Missing skills */}
       {data.missing_skills.length > 0 && (
-        <Section title="Skills the job wants that you didn't list" num="02">
-          <div className="flex flex-wrap gap-2">
+        <ResultSection title="Skills the job wants that you didn't list" num="02">
+          <div className="flex flex-wrap gap-2 mb-3">
             {data.missing_skills.map((s, i) => (
               <motion.span
                 key={s}
-                initial={{ opacity: 0, y: 4 }}
+                initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03 }}
-                className="inline-flex items-center gap-1.5 px-3 py-1 border border-rule text-sm text-graphite"
+                transition={{ delay: i * 0.025 }}
+                className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1 rounded-full bg-bg text-muted border border-border"
               >
-                <X className="w-3 h-3" strokeWidth={2} />
+                <XCircle className="w-3.5 h-3.5" strokeWidth={2} />
                 {s}
               </motion.span>
             ))}
           </div>
-          <p className="text-xs text-graphite italic mt-4 max-w-2xl">
-            If you actually have any of these, add them to your résumé. The matcher
-            only sees what's written.
+          <p className="text-sm text-muted italic">
+            If you have any of these, add them to your résumé — the matcher only sees what's written.
           </p>
-        </Section>
+        </ResultSection>
       )}
 
-      {/* Full requirement breakdown */}
+      {/* Requirement breakdown */}
       {data.matched_requirements.length > 0 && (
-        <Section title="Every requirement, one by one" num="03">
-          <div className="space-y-3">
+        <ResultSection title="Every requirement, one by one" num="03">
+          <div className="space-y-2">
             {data.matched_requirements.map((req, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, x: -4 }}
+                initial={{ opacity: 0, x: -6 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.04 }}
-                className="grid grid-cols-[auto_1fr_auto] gap-4 items-baseline pb-3 border-b border-rule/60"
+                transition={{ delay: i * 0.03 }}
+                className="grid grid-cols-[auto_1fr_auto] gap-3 items-start py-3 border-b border-border/60 last:border-0"
               >
-                <StatusBadge status={req.status} />
+                <StatusPill status={req.status} />
                 <div>
-                  <div className="text-ink">{req.text}</div>
+                  <p className="text-ink text-sm leading-relaxed">{req.text}</p>
                   {req.evidence && (
-                    <div className="text-xs text-graphite italic mt-1 max-w-xl">
-                      "{req.evidence}"
-                    </div>
+                    <p className="text-xs text-muted italic mt-1">"{req.evidence}"</p>
                   )}
                 </div>
-                <ImportanceBadge importance={req.importance} />
+                <ImportancePill importance={req.importance} />
               </motion.div>
             ))}
           </div>
-        </Section>
+        </ResultSection>
       )}
     </div>
   );
 }
 
-// ---------- Helpers ----------
+// ── Helpers ──
 
-function Section({
+function ResultSection({
   title,
   num,
   children,
@@ -140,9 +137,9 @@ function Section({
 }) {
   return (
     <div>
-      <div className="flex items-baseline gap-3 mb-5">
-        <span className="font-mono text-[10px] text-graphite">{num}</span>
-        <h3 className="font-serif text-xl text-ink tracking-tight">{title}</h3>
+      <div className="flex items-baseline gap-2 mb-4">
+        <span className="font-mono text-xs text-muted-light">{num}</span>
+        <h3 className="text-lg font-bold text-ink">{title}</h3>
       </div>
       {children}
     </div>
@@ -152,76 +149,70 @@ function Section({
 function SubScore({
   label,
   value,
-  hint,
+  barColor,
 }: {
   label: string;
   value: number;
-  hint: string;
+  barColor: string;
 }) {
   const pct = Math.round(value * 100);
   return (
     <div>
-      <div className="flex items-baseline justify-between mb-1.5">
-        <span className="text-xs uppercase tracking-[0.15em] text-graphite">
-          {label}
-        </span>
-        <span className="font-mono text-sm text-ink">{pct}%</span>
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-xs font-semibold text-muted uppercase tracking-wide">{label}</span>
+        <span className="font-mono text-sm font-bold text-ink">{pct}%</span>
       </div>
-      <div className="h-px bg-rule relative">
+      <div className="h-1.5 bg-border rounded-full overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute inset-y-0 left-0 bg-accent"
-          style={{ height: "1px" }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className={`h-full rounded-full ${barColor}`}
         />
       </div>
-      <p className="text-[11px] text-graphite italic mt-1.5">{hint}</p>
     </div>
   );
 }
 
-function StatusBadge({ status }: { status: RequirementMatchStatus }) {
-  const config = {
+function StatusPill({ status }: { status: RequirementMatchStatus }) {
+  const cfg = {
     match: {
-      Icon: Check,
-      label: "match",
-      color: "text-accent border-accent",
+      Icon: CheckCircle,
+      label: "Match",
+      cls: "bg-success-light text-success border-success-border",
     },
     partial: {
       Icon: AlertCircle,
-      label: "partial",
-      color: "text-graphite border-rule",
+      label: "Partial",
+      cls: "bg-warning-light text-warning border-warning-border",
     },
     missing: {
-      Icon: X,
-      label: "missing",
-      color: "text-graphite border-rule opacity-60",
+      Icon: XCircle,
+      label: "Missing",
+      cls: "bg-bg text-muted border-border",
     },
   }[status];
 
-  const { Icon, label, color } = config;
-
   return (
     <span
-      className={`inline-flex items-center gap-1 px-2 py-0.5 border text-[10px] uppercase tracking-wider ${color}`}
+      className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full border ${cfg.cls} whitespace-nowrap`}
     >
-      <Icon className="w-2.5 h-2.5" strokeWidth={2} />
-      {label}
+      <cfg.Icon className="w-3 h-3" strokeWidth={2.5} />
+      {cfg.label}
     </span>
   );
 }
 
-function ImportanceBadge({
+function ImportancePill({
   importance,
 }: {
   importance: "required" | "preferred" | "nice_to_have";
 }) {
-  const label = importance.replace("_", " ");
-  const opacity = importance === "required" ? "" : "opacity-60";
+  const labels = { required: "Required", preferred: "Preferred", nice_to_have: "Nice to have" };
+  const opacity = importance === "required" ? "" : "opacity-50";
   return (
-    <span className={`font-mono text-[10px] uppercase tracking-wider text-graphite ${opacity}`}>
-      {label}
+    <span className={`font-mono text-[11px] text-muted whitespace-nowrap ${opacity}`}>
+      {labels[importance]}
     </span>
   );
 }

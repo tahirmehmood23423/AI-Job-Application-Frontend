@@ -9,56 +9,51 @@ interface Props {
 }
 
 export function ATSReport({ report }: Props) {
-  const scoreColor =
-    report.score >= 80 ? "text-accent" :
-    report.score >= 60 ? "text-ink" :
-    "text-graphite";
+  const scoreStyle =
+    report.score >= 80
+      ? { text: "text-success", bg: "bg-success-light", border: "border-success-border", bar: "bg-success" }
+      : report.score >= 60
+      ? { text: "text-primary", bg: "bg-primary-light", border: "border-primary-border", bar: "bg-primary" }
+      : { text: "text-warning", bg: "bg-warning-light", border: "border-warning-border", bar: "bg-warning" };
 
   return (
     <div>
-      <div className="flex items-baseline gap-3 mb-6">
-        <span className="font-mono text-xs text-graphite">09</span>
-        <h2 className="font-serif text-2xl md:text-3xl tracking-tight text-ink">
-          ATS compatibility
-        </h2>
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-9 h-9 bg-bg rounded-lg flex items-center justify-center border border-border">
+          <CheckCircle className="w-5 h-5 text-muted" strokeWidth={1.5} />
+        </div>
+        <h2 className="text-xl font-bold text-ink">ATS Compatibility</h2>
       </div>
 
-      {/* Score and headline */}
-      <div className="grid md:grid-cols-[auto_1fr] gap-8 items-start mb-10 pb-8 border-b border-rule">
-        <div>
-          <div className={`font-serif text-7xl leading-none tracking-tightest ${scoreColor}`}>
-            {report.score}
-            <span className="text-xl text-graphite">/100</span>
+      {/* Score + stats */}
+      <div className={`rounded-2xl border ${scoreStyle.bg} ${scoreStyle.border} p-6 md:p-8 mb-6`}>
+        <div className="flex flex-wrap items-start gap-6 md:gap-10">
+          <div className="flex-shrink-0">
+            <div className={`font-serif text-8xl font-bold leading-none ${scoreStyle.text}`}>
+              {report.score}
+            </div>
+            <p className="text-xs font-semibold text-muted uppercase tracking-widest mt-2">ATS Score / 100</p>
           </div>
-          <p className="text-xs uppercase tracking-[0.2em] text-graphite mt-3">
-            ATS score
-          </p>
-        </div>
-        <div className="md:pt-4">
-          <div className="grid sm:grid-cols-2 gap-4 max-w-md">
-            <Stat
-              label="Keyword coverage"
-              value={`${Math.round(report.keyword_coverage * 100)}%`}
-            />
-            <Stat
-              label="Issues found"
-              value={String(report.issues.length)}
-            />
+          <div className="flex-1 pt-2 space-y-4">
+            <div className="grid sm:grid-cols-2 gap-5 max-w-sm">
+              <Stat label="Keyword coverage" value={`${Math.round(report.keyword_coverage * 100)}%`} />
+              <Stat label="Issues found" value={String(report.issues.length)} />
+            </div>
+            <p className="text-sm text-muted italic max-w-xl leading-relaxed">
+              ATS systems index your résumé as plain text. This score reflects how cleanly the
+              tailored version parses and how many of the job&apos;s keywords appear.
+            </p>
           </div>
-          <p className="text-sm text-graphite mt-4 italic max-w-xl">
-            ATS systems index your résumé as plain text. This score reflects how
-            cleanly your tailored version would parse and how many of the job&apos;s
-            keywords appear.
-          </p>
         </div>
       </div>
 
       {/* Issues */}
       {report.issues.length > 0 && (
-        <div className="mb-10">
-          <h3 className="font-serif text-xl text-ink mb-5">Issues to address</h3>
-          <div className="space-y-3">
-            {groupBySeverity(report.issues).map(({ severity, items }) =>
+        <div className="mb-8">
+          <h3 className="text-base font-bold text-ink mb-4">Issues to address</h3>
+          <div className="space-y-2">
+            {groupBySeverity(report.issues).flatMap(({ severity, items }) =>
               items.map((issue, i) => (
                 <IssueRow key={`${severity}-${i}`} severity={severity} message={issue.message} />
               ))
@@ -67,22 +62,21 @@ export function ATSReport({ report }: Props) {
         </div>
       )}
 
-      {/* Keyword matches and misses */}
-      <div className="grid md:grid-cols-2 gap-10">
+      {/* Keywords */}
+      <div className="grid md:grid-cols-2 gap-8">
         <div>
-          <h3 className="font-serif text-lg text-ink mb-3">Keywords matched</h3>
+          <h3 className="text-base font-bold text-ink mb-3">Keywords matched</h3>
           {report.keyword_matches.length === 0 ? (
-            <p className="text-sm text-graphite italic">None matched.</p>
+            <p className="text-sm text-muted italic">None matched.</p>
           ) : (
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-2">
               {report.keyword_matches.map((k, i) => (
                 <motion.span
                   key={k}
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.02 }}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 border border-accent text-xs"
-                  style={{ color: "#B8472F" }}
+                  className="inline-flex items-center gap-1 text-sm font-medium px-2.5 py-0.5 rounded-full bg-success-light text-success border border-success-border"
                 >
                   {k}
                 </motion.span>
@@ -92,25 +86,25 @@ export function ATSReport({ report }: Props) {
         </div>
 
         <div>
-          <h3 className="font-serif text-lg text-ink mb-3">Keywords missed</h3>
+          <h3 className="text-base font-bold text-ink mb-3">Keywords missed</h3>
           {report.keyword_misses.length === 0 ? (
-            <p className="text-sm text-graphite italic">All keywords covered.</p>
+            <p className="text-sm text-muted italic">All keywords covered.</p>
           ) : (
             <>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-2 mb-3">
                 {report.keyword_misses.map((k, i) => (
                   <motion.span
                     key={k}
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.02 }}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 border border-rule text-xs text-graphite"
+                    className="text-sm font-medium px-2.5 py-0.5 rounded-full bg-bg text-muted border border-border"
                   >
                     {k}
                   </motion.span>
                 ))}
               </div>
-              <p className="text-[11px] text-graphite italic mt-3">
+              <p className="text-xs text-muted italic">
                 Consider weaving these in — but only where you actually have the experience.
               </p>
             </>
@@ -121,49 +115,38 @@ export function ATSReport({ report }: Props) {
   );
 }
 
-// ---------- helpers ----------
+// ── Helpers ──
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[10px] uppercase tracking-[0.2em] text-graphite mb-1">{label}</p>
-      <p className="font-serif text-2xl text-ink">{value}</p>
+      <p className="text-xs font-semibold text-muted uppercase tracking-wide mb-1">{label}</p>
+      <p className="text-2xl font-bold text-ink font-serif">{value}</p>
     </div>
   );
 }
 
 function IssueRow({ severity, message }: { severity: ATSSeverity; message: string }) {
-  const { Icon, color, label } = severityStyle(severity);
+  const cfg = {
+    error: { Icon: XCircle, cls: "text-error bg-error-light border-error-border", label: "Error" },
+    warning: { Icon: AlertTriangle, cls: "text-warning bg-warning-light border-warning-border", label: "Warning" },
+    info: { Icon: Info, cls: "text-primary bg-primary-light border-primary-border", label: "Info" },
+  }[severity];
+
   return (
-    <div className="flex items-start gap-3 py-2 border-b border-rule/60">
-      <Icon className={`w-4 h-4 mt-0.5 flex-shrink-0 ${color}`} strokeWidth={1.5} />
-      <div className="flex-1">
-        <span className={`font-mono text-[10px] uppercase tracking-wider ${color}`}>
-          {label}
-        </span>
-        <p className="text-sm text-ink mt-0.5">{message}</p>
+    <div className={`flex items-start gap-3 px-4 py-3 rounded-xl border ${cfg.cls}`}>
+      <cfg.Icon className="w-4 h-4 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+      <div>
+        <span className="text-xs font-bold uppercase tracking-wide mr-2">{cfg.label}</span>
+        <span className="text-sm leading-relaxed">{message}</span>
       </div>
     </div>
   );
 }
 
-function severityStyle(s: ATSSeverity) {
-  switch (s) {
-    case "error":
-      return { Icon: XCircle, color: "text-accent", label: "error" };
-    case "warning":
-      return { Icon: AlertTriangle, color: "text-ink", label: "warning" };
-    case "info":
-      return { Icon: Info, color: "text-graphite", label: "info" };
-  }
-}
-
 function groupBySeverity(issues: ATSReportType["issues"]) {
   const order: ATSSeverity[] = ["error", "warning", "info"];
   return order
-    .map((severity) => ({
-      severity,
-      items: issues.filter((i) => i.severity === severity),
-    }))
+    .map((severity) => ({ severity, items: issues.filter((i) => i.severity === severity) }))
     .filter((g) => g.items.length > 0);
 }

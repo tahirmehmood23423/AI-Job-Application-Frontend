@@ -41,29 +41,33 @@ export function TailorPanel({ resume }: TailorPanelProps) {
     } catch (err) {
       setState({
         kind: "error",
-        message:
-          err instanceof ApiError
-            ? err.message
-            : "Tailor failed. Please try again.",
+        message: err instanceof ApiError ? err.message : "Tailor failed. Please try again.",
       });
     }
   };
 
   return (
-    <section className="border-t border-rule pt-16 mt-16">
-      {/* Header */}
+    <div className="card overflow-hidden">
+      {/* Header toggle */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-baseline justify-between gap-4 mb-6 group"
+        className="w-full flex items-center justify-between gap-4 p-6 hover:bg-bg transition-colors group"
       >
-        <div className="flex items-baseline gap-4">
-          <span className="font-mono text-xs text-graphite">08</span>
-          <h2 className="font-serif text-3xl md:text-4xl tracking-tight text-ink group-hover:text-accent transition-colors">
-            Tailor for this job
-          </h2>
+        <div className="flex items-center gap-4">
+          <div className="w-11 h-11 bg-violet-light rounded-xl flex items-center justify-center flex-shrink-0">
+            <Wand2 className="w-5 h-5 text-violet" />
+          </div>
+          <div className="text-left">
+            <p className="font-bold text-ink text-lg group-hover:text-violet transition-colors">
+              Tailor for this job
+            </p>
+            <p className="text-sm text-muted mt-0.5">
+              Rewrite and optimise your résumé for a specific role
+            </p>
+          </div>
         </div>
-        <span className="text-graphite group-hover:text-ink transition-colors">
-          {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        <span className="text-muted-light group-hover:text-muted transition-colors flex-shrink-0">
+          {open ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
         </span>
       </button>
 
@@ -73,139 +77,131 @@ export function TailorPanel({ resume }: TailorPanelProps) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <p className="text-graphite max-w-2xl mb-8 leading-relaxed">
-              Generate a tailored version of your résumé for this specific job.
-              The AI rewrites, reorders, and emphasises — but is source-bound:
-              it can never invent skills or experience you don&apos;t have.
-            </p>
-
-            {/* Mode selector */}
-            <div className="mb-8">
-              <label className="block text-xs uppercase tracking-[0.2em] text-graphite mb-3">
-                Mode
-              </label>
-              <div className="flex gap-3">
-                <ModeOption
-                  active={mode === "strict"}
-                  onClick={() => setMode("strict")}
-                  icon={Shield}
-                  label="Strict review"
-                  hint="Inspect each change before accepting"
-                />
-                <ModeOption
-                  active={mode === "auto"}
-                  onClick={() => setMode("auto")}
-                  icon={Zap}
-                  label="Auto-accept"
-                  hint="Apply all changes, review the diff after"
-                />
-              </div>
-            </div>
-
-            {/* Inputs */}
-            <div className="grid md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <label className="block text-xs uppercase tracking-[0.2em] text-graphite mb-2">
-                  Job title (optional)
-                </label>
-                <input
-                  type="text"
-                  value={jobTitle}
-                  onChange={(e) => setJobTitle(e.target.value)}
-                  placeholder="e.g. Senior ML Engineer"
-                  className="w-full px-4 py-3 bg-cream border border-rule text-ink focus:border-ink outline-none transition-colors"
-                />
-              </div>
-              <div>
-                <label className="block text-xs uppercase tracking-[0.2em] text-graphite mb-2">
-                  Company (optional)
-                </label>
-                <input
-                  type="text"
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  placeholder="e.g. Anthropic"
-                  className="w-full px-4 py-3 bg-cream border border-rule text-ink focus:border-ink outline-none transition-colors"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs uppercase tracking-[0.2em] text-graphite mb-2">
-                Job description
-              </label>
-              <textarea
-                value={jd}
-                onChange={(e) => setJd(e.target.value)}
-                placeholder="Paste the full job description here. The richer the detail, the better the tailoring."
-                rows={10}
-                className="w-full px-4 py-3 bg-cream border border-rule text-ink focus:border-ink outline-none transition-colors font-serif text-base leading-relaxed resize-y"
-              />
-              <p className="text-xs text-graphite mt-2">
-                {jd.length} characters · {jd.length < 50 ? "Need at least 50" : "Ready to tailor"}
+            <div className="px-6 pb-8 border-t border-border pt-6 space-y-5">
+              <p className="text-muted text-base leading-relaxed max-w-2xl">
+                Generate a tailored version of your résumé for this specific job. The AI rewrites,
+                reorders, and emphasises — but is source-bound: it will never invent skills or
+                experience you don&apos;t have.
               </p>
-            </div>
 
-            {/* Action */}
-            <div className="mt-6 flex flex-wrap items-center gap-4">
-              <button
-                onClick={run}
-                disabled={!canSubmit}
-                className={`
-                  inline-flex items-center gap-2 px-6 py-3 text-sm transition-colors
-                  ${canSubmit
-                    ? "bg-ink text-cream hover:bg-graphite"
-                    : "bg-rule text-graphite cursor-not-allowed"}
-                `}
-              >
-                {state.kind === "loading" ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Tailoring…
-                  </>
-                ) : (
-                  <>
-                    <Wand2 className="w-4 h-4" />
-                    Tailor my résumé
-                  </>
+              {/* Mode picker */}
+              <div>
+                <label className="block text-sm font-semibold text-ink mb-2">Mode</label>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <ModeOption
+                    active={mode === "strict"}
+                    onClick={() => setMode("strict")}
+                    icon={Shield}
+                    label="Strict review"
+                    hint="Inspect and accept each change individually"
+                  />
+                  <ModeOption
+                    active={mode === "auto"}
+                    onClick={() => setMode("auto")}
+                    icon={Zap}
+                    label="Auto-accept"
+                    hint="Apply all changes, review the diff after"
+                  />
+                </div>
+              </div>
+
+              {/* Optional fields */}
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-ink mb-1.5">
+                    Job title <span className="font-normal text-muted">(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={jobTitle}
+                    onChange={(e) => setJobTitle(e.target.value)}
+                    placeholder="e.g. Senior ML Engineer"
+                    className="input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-ink mb-1.5">
+                    Company <span className="font-normal text-muted">(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    placeholder="e.g. Anthropic"
+                    className="input"
+                  />
+                </div>
+              </div>
+
+              {/* JD textarea */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-sm font-semibold text-ink">Job description</label>
+                  <span className={`text-xs font-mono ${jd.length < 50 ? "text-muted-light" : "text-success"}`}>
+                    {jd.length < 50 ? `${50 - jd.length} more chars needed` : `${jd.length} chars · ready`}
+                  </span>
+                </div>
+                <textarea
+                  value={jd}
+                  onChange={(e) => setJd(e.target.value)}
+                  placeholder="Paste the full job description here. The richer the detail, the better the tailoring."
+                  rows={9}
+                  className="input font-sans"
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-wrap items-center gap-4">
+                <button onClick={run} disabled={!canSubmit} className="btn-primary">
+                  {state.kind === "loading" ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Tailoring…
+                    </>
+                  ) : (
+                    <>
+                      <Wand2 className="w-4 h-4" />
+                      Tailor my résumé
+                    </>
+                  )}
+                </button>
+                {state.kind === "loading" && (
+                  <p className="text-sm text-muted italic">
+                    Rewriting + diff + ATS check — usually 15–30 seconds.
+                  </p>
                 )}
-              </button>
-              {state.kind === "loading" && (
-                <p className="text-xs text-graphite italic">
-                  Rewriting + diff + ATS check — usually 15–30 seconds.
-                </p>
+              </div>
+
+              {/* Error */}
+              {state.kind === "error" && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-error-light border border-error-border text-error px-4 py-3 rounded-xl text-sm font-medium"
+                >
+                  {state.message}
+                </motion.div>
+              )}
+
+              {/* Result */}
+              {state.kind === "result" && (
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  className="mt-4"
+                >
+                  <TailorResults data={state.data} />
+                </motion.div>
               )}
             </div>
-
-            {/* Error */}
-            {state.kind === "error" && (
-              <motion.div
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-6 p-4 border border-rule bg-cream text-sm text-accentDark"
-              >
-                {state.message}
-              </motion.div>
-            )}
-
-            {/* Result */}
-            {state.kind === "result" && (
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                className="mt-12"
-              >
-                <TailorResults data={state.data} />
-              </motion.div>
-            )}
           </motion.div>
         )}
       </AnimatePresence>
-    </section>
+    </div>
   );
 }
 
@@ -225,19 +221,17 @@ function ModeOption({
   return (
     <button
       onClick={onClick}
-      className={`
-        flex-1 text-left px-4 py-3 border transition-colors
-        ${active
-          ? "border-ink bg-ink text-cream"
-          : "border-rule bg-cream text-ink hover:border-ink"}
-      `}
+      className={[
+        "flex items-start gap-3 text-left px-4 py-3.5 rounded-xl border transition-all",
+        active
+          ? "bg-navy border-navy text-white"
+          : "bg-surface border-border text-ink hover:border-border-strong",
+      ].join(" ")}
     >
-      <div className="flex items-center gap-2 mb-1">
-        <Icon className="w-3.5 h-3.5" strokeWidth={1.5} />
-        <span className="font-mono text-xs uppercase tracking-wider">{label}</span>
-      </div>
-      <div className={`text-xs italic ${active ? "text-cream/70" : "text-graphite"}`}>
-        {hint}
+      <Icon className={`w-5 h-5 mt-0.5 flex-shrink-0 ${active ? "text-blue-400" : "text-muted"}`} strokeWidth={1.5} />
+      <div>
+        <p className="font-semibold text-sm">{label}</p>
+        <p className={`text-xs mt-0.5 ${active ? "text-white/60" : "text-muted"}`}>{hint}</p>
       </div>
     </button>
   );

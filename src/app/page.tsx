@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Github } from "lucide-react";
+import { ArrowRight, Sparkles, FileText, Zap, AlertTriangle } from "lucide-react";
 import { UploadZone } from "@/components/UploadZone";
 import { LoadingState } from "@/components/LoadingState";
 import { Results } from "@/components/Results";
@@ -35,158 +35,187 @@ export default function Home() {
   const reset = () => setStage({ kind: "idle" });
 
   return (
-    <main className="relative min-h-screen px-6 md:px-12 py-10 md:py-16 max-w-6xl mx-auto">
-      {/* Top bar */}
-      <header className="flex items-center justify-between mb-20 md:mb-28">
-        <div className="rise" style={{ animationDelay: "0.05s" }}>
-          <p className="text-[11px] font-mono uppercase tracking-[0.25em] text-graphite">
-            An AI Field Study
-          </p>
-          <p className="text-[11px] font-mono text-graphite mt-0.5">
-            № 01 · The Résumé Parser
-          </p>
+    <div className="min-h-screen bg-bg">
+      {/* ── Navigation ── */}
+      <nav className="bg-navy sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+              <FileText className="w-4 h-4 text-white" />
+            </div>
+            <span className="text-white font-bold text-base">ResumeAI</span>
+            <span className="hidden sm:inline text-white/30 text-xs font-mono border border-white/20 px-2 py-0.5 rounded-full ml-1">
+              Module 01
+            </span>
+          </div>
+          <a
+            href="https://github.com/tahirmehmood23423/AI-Job-Application-Tracker"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.79-.26.79-.58v-2.23c-3.34.72-4.03-1.42-4.03-1.42-.55-1.39-1.33-1.76-1.33-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.005 2.05.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.19.69.8.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            <span className="hidden sm:inline">View Source</span>
+          </a>
         </div>
-        <a
-          href="https://github.com/tahirmehmood23423/AI-Job-Application-Tracker"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-xs text-graphite hover:text-ink transition-colors rise"
-          style={{ animationDelay: "0.1s" }}
-        >
-          <Github className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Source</span>
-        </a>
-      </header>
+      </nav>
 
-      {/* Hero — only show when idle or loading */}
+      {/* ── Hero (hidden in results view) ── */}
       {stage.kind !== "results" && (
-        <section className="mb-16 md:mb-24">
-          <h1
-            className="font-serif text-6xl md:text-8xl lg:text-9xl text-ink leading-[0.88] tracking-tightest mb-8 rise"
-            style={{ animationDelay: "0.15s" }}
-          >
-            Résumés,
-            <br />
-            <span className="italic text-accent">structured.</span>
-          </h1>
-          <div
-            className="max-w-2xl rise"
-            style={{ animationDelay: "0.3s" }}
-          >
-            <p className="text-lg md:text-xl text-graphite leading-relaxed">
-              Upload a PDF or DOCX résumé. In a few seconds, the parser returns
-              clean, structured data — name, contact, skills, every job, every
-              project — ready for downstream use. Built as Module 01 of an AI
-              job-application toolkit.
-            </p>
-          </div>
+        <div style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 55%, #0f172a 100%)" }}>
+          <div className="max-w-6xl mx-auto px-6 py-20 md:py-28 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-8">
+                <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+                <span className="text-blue-200 text-sm font-medium">AI-Powered Resume Parser</span>
+              </div>
 
-          {/* Tech credits in fine print */}
-          <div
-            className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-[11px] font-mono uppercase tracking-wider text-graphite rise"
-            style={{ animationDelay: "0.45s" }}
-          >
-            <span>FastAPI</span>
-            <span className="text-rule">/</span>
-            <span>Gemini</span>
-            <span className="text-rule">/</span>
-            <span>pdfplumber</span>
-            <span className="text-rule">/</span>
-            <span>Next.js</span>
+              <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl text-white font-bold leading-[1.05] tracking-tight mb-6">
+                Turn résumés into
+                <span className="block text-blue-400">structured data</span>
+              </h1>
+
+              <p className="text-white/65 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-10">
+                Upload a PDF or DOCX résumé and receive clean, structured JSON in seconds.
+                Extract contact info, skills, experience, education, and more — powered by Gemini AI.
+              </p>
+
+              <div className="flex flex-wrap justify-center gap-3">
+                {["FastAPI", "Google Gemini", "pdfplumber", "Next.js"].map((tech) => (
+                  <span
+                    key={tech}
+                    className="bg-white/10 border border-white/20 text-white/70 px-3 py-1 rounded-full text-xs font-mono"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
           </div>
-        </section>
+        </div>
       )}
 
-      {/* Stage content */}
-      <AnimatePresence mode="wait">
-        {stage.kind === "idle" && (
-          <motion.div
-            key="idle"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="rise"
-            style={{ animationDelay: "0.6s" }}
-          >
-            <UploadZone onFile={handleFile} />
-
-            <div className="mt-12 grid md:grid-cols-3 gap-8 text-sm">
-              <Step num="01" title="Upload" body="Drag a PDF or DOCX file, or click to browse." />
-              <Step num="02" title="Parse" body="The model reads sections, extracts fields, validates." />
-              <Step num="03" title="Use" body="Copy JSON, download it, or feed it to the next module." />
-            </div>
-          </motion.div>
-        )}
-
-        {stage.kind === "loading" && (
-          <motion.div
-            key="loading"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <LoadingState filename={stage.filename} />
-          </motion.div>
-        )}
-
-        {stage.kind === "error" && (
-          <motion.div
-            key="error"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="border border-rule bg-cream px-10 py-16 text-center"
-          >
-            <p className="text-xs uppercase tracking-[0.2em] text-accentDark mb-4">
-              An error occurred
-            </p>
-            <p className="font-serif text-2xl text-ink mb-2">{stage.message}</p>
-            <p className="font-mono text-xs text-graphite mb-8">{stage.filename}</p>
-            <button
-              onClick={reset}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-ink text-cream hover:bg-graphite text-sm transition-colors"
+      {/* ── Main content ── */}
+      <main className="max-w-6xl mx-auto px-6 py-12">
+        <AnimatePresence mode="wait">
+          {stage.kind === "idle" && (
+            <motion.div
+              key="idle"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.45 }}
             >
-              Try again
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </motion.div>
-        )}
+              <UploadZone onFile={handleFile} />
 
-        {stage.kind === "results" && (
-          <motion.div
-            key="results"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Results data={stage.data} onReset={reset} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <div className="mt-14 grid md:grid-cols-3 gap-6">
+                <FeatureCard
+                  icon={FileText}
+                  num="01"
+                  title="Upload"
+                  body="Drag and drop a PDF or DOCX résumé, or click to browse. Files up to 10 MB supported."
+                />
+                <FeatureCard
+                  icon={Sparkles}
+                  num="02"
+                  title="Parse"
+                  body="Gemini AI reads every section, extracts all fields, and validates the structured output."
+                />
+                <FeatureCard
+                  icon={Zap}
+                  num="03"
+                  title="Use"
+                  body="Copy the JSON, download it, or run it through the Match, Tailor, and Cover Letter modules."
+                />
+              </div>
+            </motion.div>
+          )}
 
-      {/* Footer */}
-      <footer className="mt-32 pt-8 border-t border-rule">
-        <div className="flex flex-wrap justify-between gap-4 text-[11px] font-mono uppercase tracking-wider text-graphite">
+          {stage.kind === "loading" && (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.35 }}
+            >
+              <LoadingState filename={stage.filename} />
+            </motion.div>
+          )}
+
+          {stage.kind === "error" && (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className="card p-10 text-center max-w-lg mx-auto">
+                <div className="w-16 h-16 bg-error-light rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <AlertTriangle className="w-8 h-8 text-error" strokeWidth={1.5} />
+                </div>
+                <h3 className="text-xl font-bold text-ink mb-3">Something went wrong</h3>
+                <p className="text-muted text-base mb-2 leading-relaxed">{stage.message}</p>
+                <p className="text-sm font-mono text-muted-light mb-8 truncate">{stage.filename}</p>
+                <button onClick={reset} className="btn-primary mx-auto">
+                  Try again
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {stage.kind === "results" && (
+            <motion.div
+              key="results"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Results data={stage.data} onReset={reset} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
+
+      {/* ── Footer ── */}
+      <footer className="border-t border-border mt-20 py-8">
+        <div className="max-w-6xl mx-auto px-6 flex flex-wrap justify-between items-center gap-4 text-sm text-muted">
           <span>Built by Tahir Mehmood · 2026</span>
-          <span>Module 01 / 10</span>
+          <span className="font-mono text-xs">Module 01 / 10</span>
         </div>
       </footer>
-    </main>
+    </div>
   );
 }
 
-function Step({ num, title, body }: { num: string; title: string; body: string }) {
+function FeatureCard({
+  icon: Icon,
+  num,
+  title,
+  body,
+}: {
+  icon: React.ElementType;
+  num: string;
+  title: string;
+  body: string;
+}) {
   return (
-    <div>
-      <div className="flex items-baseline gap-3 mb-2">
-        <span className="font-mono text-xs text-graphite">{num}</span>
-        <h3 className="font-serif text-xl text-ink tracking-tight">{title}</h3>
+    <div className="card card-hover p-7">
+      <div className="flex items-center justify-between mb-5">
+        <div className="w-11 h-11 bg-primary-light rounded-xl flex items-center justify-center">
+          <Icon className="w-5 h-5 text-primary" />
+        </div>
+        <span className="font-mono text-xs text-muted-light">{num}</span>
       </div>
-      <p className="text-graphite text-[13px] leading-relaxed pl-8">{body}</p>
+      <h3 className="font-bold text-ink text-lg mb-2">{title}</h3>
+      <p className="text-muted text-base leading-relaxed">{body}</p>
     </div>
   );
 }
