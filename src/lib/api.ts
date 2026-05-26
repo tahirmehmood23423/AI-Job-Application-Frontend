@@ -1,4 +1,6 @@
 import type {
+  CoverLetterRequest,
+  CoverLetterResult,
   MatchRequest,
   MatchResult,
   ParsedResume,
@@ -104,6 +106,37 @@ export async function tailorResume(request: TailorRequest): Promise<TailorResult
     throw new ApiError(detail, response.status);
   }
   return (await response.json()) as TailorResult;
+}
+
+// ---------- Module 4 ----------
+
+export async function generateCoverLetter(
+  request: CoverLetterRequest
+): Promise<CoverLetterResult> {
+  let response: Response;
+  try {
+    response = await fetch(`${API_URL}/api/v1/cover-letter`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(request),
+    });
+  } catch (err) {
+    throw new ApiError(
+      "Could not reach the cover letter generator. The server may be waking up — please try again in 30 seconds."
+    );
+  }
+
+  if (!response.ok) {
+    let detail = `Cover letter request failed (${response.status})`;
+    try {
+      const body = await response.json();
+      if (body.detail) detail = body.detail;
+    } catch {
+      /* ignore */
+    }
+    throw new ApiError(detail, response.status);
+  }
+  return (await response.json()) as CoverLetterResult;
 }
 
 // ---------- Health ----------

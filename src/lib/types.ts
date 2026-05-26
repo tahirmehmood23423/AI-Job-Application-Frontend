@@ -171,3 +171,33 @@ export interface TailorResult {
   total_changes: number;
   high_impact_changes: number;
 }
+
+// ---------- Module 4: Cover Letter types ----------
+// Add these to the bottom of src/lib/types.ts
+
+export type TonePreference = "professional" | "conversational" | "confident" | "enthusiastic";
+
+export interface TalkingPoints {
+  strongest_experiences: string[];
+  matched_skills: string[];
+  standout_achievement: string;
+  why_this_company: string;
+  gap_to_address: string | null;
+}
+
+export interface CoverLetterRequest {
+  resume: ParsedResume;
+  match_result?: MatchResult | null;
+  job_description: string;
+  tone: TonePreference;
+  job_title?: string | null;
+  company_name?: string | null;
+}
+
+export interface CoverLetterResult {
+  cover_letter: string;
+  talking_points: TalkingPoints;
+  word_count: number;
+  tone_applied: TonePreference;
+  match_score_used: number | null;
+}

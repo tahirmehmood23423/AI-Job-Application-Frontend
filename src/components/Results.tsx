@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import type { ParsedResume } from "@/lib/types";
+import { CoverLetterPanel } from "./CoverLetterPanel";
 import { MatchPanel } from "./MatchPanel";
 import { TailorPanel } from "./TailorPanel";
 
@@ -247,6 +248,11 @@ export function Results({ data, onReset }: ResultsProps) {
       {/* MODULE 3 — Tailor panel */}
       <motion.div variants={item}>
         <TailorPanel resume={data} />
+      </motion.div>
+
+      {/* MODULE 4 — Cover letter panel */}
+      <motion.div variants={item}>
+        <CoverLetterPanel resume={data} matchResult={null} />
       </motion.div>
     </motion.div>
   );
