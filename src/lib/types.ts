@@ -259,3 +259,63 @@ export interface SavedJob {
   notes: string | null;
   status: SavedJobStatus;
 }
+// ── Module 6 — Dashboard ──────────────────────────────────────────
+export type ApplicationStatus =
+  | "saved" | "applied" | "screening"
+  | "interview" | "offer" | "rejected" | "withdrawn";
+
+export interface StatusEvent {
+  id: string;
+  from_status: string | null;
+  to_status: string;
+  note: string | null;
+  created_at: string;
+}
+
+export interface Application {
+  id: string;
+  resume_id: string;
+  job_title: string;
+  company: string;
+  job_url: string | null;
+  location: string | null;
+  salary_range: string | null;
+  match_score: number | null;
+  ats_score: number | null;
+  status: ApplicationStatus;
+  notes: string | null;
+  cover_letter: string | null;
+  applied_at: string | null;
+  created_at: string;
+  updated_at: string;
+  events: StatusEvent[];
+}
+
+export interface DashboardStats {
+  total_applications: number;
+  avg_match_score: number | null;
+  avg_ats_score: number | null;
+  status_breakdown: { status: ApplicationStatus; count: number }[];
+  top_companies: string[];
+  applications_this_week: number;
+}
+
+export const STATUS_LABELS: Record<ApplicationStatus, string> = {
+  saved: "Saved", applied: "Applied", screening: "Screening",
+  interview: "Interview", offer: "Offer",
+  rejected: "Rejected", withdrawn: "Withdrawn",
+};
+
+export const STATUS_COLORS: Record<ApplicationStatus, string> = {
+  saved: "bg-gray-100 text-gray-700",
+  applied: "bg-blue-100 text-blue-700",
+  screening: "bg-yellow-100 text-yellow-700",
+  interview: "bg-purple-100 text-purple-700",
+  offer: "bg-green-100 text-green-700",
+  rejected: "bg-red-100 text-red-700",
+  withdrawn: "bg-slate-100 text-slate-500",
+};
+
+export const STATUS_ORDER: ApplicationStatus[] = [
+  "saved", "applied", "screening", "interview", "offer", "rejected", "withdrawn",
+];

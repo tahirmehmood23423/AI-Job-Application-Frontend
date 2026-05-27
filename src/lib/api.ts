@@ -1,6 +1,9 @@
 import type {
+  Application,
+  ApplicationStatus,
   CoverLetterRequest,
   CoverLetterResult,
+  DashboardStats,
   JobSearchRequest,
   JobSearchResult,
   MatchRequest,
@@ -182,3 +185,33 @@ export async function checkHealth(): Promise<boolean> {
     return false;
   }
 }
+// ---------- Module 6 ----------
+
+export const listApplications = (
+  userId: string,
+  params: { status?: ApplicationStatus; search?: string } = {}
+): Promise<Application[]> => {
+  const qs = new URLSearchParams();
+  if (params.status) qs.set("status", params.status);
+  if (params.search) qs.set("search", params.search);
+  const q = qs.toString() ? `?${qs}` : "";
+  return fetch(`${API_URL}/dashboard/users/${userId}/applications${q}`)
+    .then(r => r.json());
+};
+
+export const updateApplication = (
+  userId: string, appId: string,
+  data: { status?: ApplicationStatus; notes?: string }
+): Promise<Application> =>
+  fetch(`${API_URL}/dashboard/users/${userId}/applications/${appId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  }).then(r => r.json());
+
+export const deleteApplication = (userId: string, appId: string): Promise<void> =>
+  fetch(`${API_URL}/dashboard/users/${userId}/applications/${appId}`,
+    { method: "DELETE" }).then(() => undefined);
+
+export const getDashboardStats = (userId: string): Promise<DashboardStats> =>
+  fetch(`${API_URL}/dashboard/users/${userId}/stats`).then(r => r.json());
