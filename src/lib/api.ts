@@ -1,6 +1,8 @@
 import type {
   CoverLetterRequest,
   CoverLetterResult,
+  JobSearchRequest,
+  JobSearchResult,
   MatchRequest,
   MatchResult,
   ParsedResume,
@@ -137,6 +139,37 @@ export async function generateCoverLetter(
     throw new ApiError(detail, response.status);
   }
   return (await response.json()) as CoverLetterResult;
+}
+
+// ---------- Module 5 ----------
+
+export async function discoverJobs(
+  request: JobSearchRequest
+): Promise<JobSearchResult> {
+  let response: Response;
+  try {
+    response = await fetch(`${API_URL}/api/v1/jobs/discover`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(request),
+    });
+  } catch (err) {
+    throw new ApiError(
+      "Could not reach the job discovery service. The server may be waking up — please try again in 30 seconds."
+    );
+  }
+
+  if (!response.ok) {
+    let detail = `Job discovery failed (${response.status})`;
+    try {
+      const body = await response.json();
+      if (body.detail) detail = body.detail;
+    } catch {
+      /* ignore */
+    }
+    throw new ApiError(detail, response.status);
+  }
+  return (await response.json()) as JobSearchResult;
 }
 
 // ---------- Health ----------

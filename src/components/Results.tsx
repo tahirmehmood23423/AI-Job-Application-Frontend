@@ -9,6 +9,7 @@ import {
 import { useState } from "react";
 import type { ParsedResume } from "@/lib/types";
 import { CoverLetterPanel } from "./CoverLetterPanel";
+import { JobDiscoveryPanel } from "./JobDiscoveryPanel";
 import { MatchPanel } from "./MatchPanel";
 import { TailorPanel } from "./TailorPanel";
 
@@ -331,6 +332,11 @@ export function Results({ data, onReset }: ResultsProps) {
           <TailorPanel resume={data} />
           <CoverLetterPanel resume={data} matchResult={null} />
         </div>
+      </motion.div>
+
+      {/* ── Job Discovery ── */}
+      <motion.div variants={fadeUp}>
+        <JobDiscoveryPanel resume={data} />
       </motion.div>
     </motion.div>
   );

@@ -173,7 +173,6 @@ export interface TailorResult {
 }
 
 // ---------- Module 4: Cover Letter types ----------
-// Add these to the bottom of src/lib/types.ts
 
 export type TonePreference = "professional" | "conversational" | "confident" | "enthusiastic";
 
@@ -200,4 +199,63 @@ export interface CoverLetterResult {
   word_count: number;
   tone_applied: TonePreference;
   match_score_used: number | null;
+}
+
+// ---------- Module 5: Job Discovery types ----------
+
+export type JobSource = "linkedin" | "indeed" | "remotive";
+
+export type JobType =
+  | "full_time"
+  | "part_time"
+  | "contract"
+  | "remote"
+  | "internship"
+  | "unknown";
+
+export interface JobListing {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  salary: string | null;
+  job_type: JobType;
+  description_snippet: string;
+  url: string;
+  posted_at: string | null;
+  source: JobSource;
+  match_score: number | null;
+  match_verdict: string | null;
+}
+
+export interface JobSearchRequest {
+  resume: ParsedResume;
+  keywords?: string[] | null;
+  location?: string | null;
+  sources?: JobSource[];
+  max_results_per_source?: number;
+  auto_match?: boolean;
+}
+
+export interface JobSearchResult {
+  jobs: JobListing[];
+  total_found: number;
+  keywords_used: string[];
+  location_used: string | null;
+  sources_queried: JobSource[];
+  auto_matched: boolean;
+}
+
+export type SavedJobStatus =
+  | "saved"
+  | "applied"
+  | "interviewing"
+  | "rejected"
+  | "offer";
+
+export interface SavedJob {
+  job: JobListing;
+  saved_at: string;
+  notes: string | null;
+  status: SavedJobStatus;
 }
